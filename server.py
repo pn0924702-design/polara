@@ -8,7 +8,9 @@ import json, os, re, socket, ipaddress, time
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 INDEX_FILE = os.path.join(ROOT, "index.json")
-HOST = "0.0.0.0"\nPORT = int(os.environ.get("PORT", "8765"))\nPUBLIC_CRAWL = os.environ.get("POLARA_ENABLE_CRAWL", "0") == "1"
+HOST = "0.0.0.0"
+PORT = int(os.environ.get("PORT", "8765"))
+PUBLIC_CRAWL = os.environ.get("POLARA_ENABLE_CRAWL", "0") == "1"
 MAX_PAGES = 20
 MAX_BYTES = 1_500_000
 USER_AGENT = "POLARA-Prototype/1.0 (local educational crawler)"
