@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: polara-demo
+    runtime: python
+    buildCommand: ""
+    startCommand: python server.py
+    envVars:
+      - key: POLARA_ENABLE_CRAWL
+        value: "0"

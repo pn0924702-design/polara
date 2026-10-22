@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>POLARA — поиск</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top"><a class="brand" href="/"><span class="logo">✦</span> POLARA</a><span class="tag">ЛОКАЛЬНЫЙ ПРОТОТИП</span></header>
+<main>
+<section class="hero">
+<div class="orb">✦</div>
+<p class="eyebrow">ПОИСК НАЧИНАЕТСЯ ЗДЕСЬ</p>
+<h1>Найди своё <span>направление.</span></h1>
+<p class="intro">Добавь сайт в индекс POLARA, а затем ищи по его содержимому.</p>
+<form id="search-form" class="searchbox">
+<span class="search-icon">⌕</span><input id="query" type="search" placeholder="Что будем искать?" autocomplete="off" aria-label="Поисковый запрос">
+<button type="submit">Искать <span>→</span></button>
+</form>
+<div class="stats"><span class="dot"></span><span id="count">Загружено страниц: проверка…</span></div>
+</section>
+<section class="results-section">
+<div class="results-head"><h2 id="results-title">Результаты поиска</h2><span id="result-count"></span></div>
+<div id="results" class="results"><div class="empty">Начни с добавления сайта в индекс ниже.</div></div>
+</section>
+<section class="crawler">
+<div class="crawler-heading"><div><p class="eyebrow">РАЗВИТИЕ POLARA</p><h2>Добавить сайт в индекс</h2></div><div class="crawler-icon">↗</div></div>
+<p class="crawler-copy">Прототип посетит до 20 страниц одного сайта и сохранит текст для поиска на этом компьютере.</p>
+<form id="crawl-form" class="crawl-form"><input id="site-url" type="url" placeholder="https://example.com/" required><button type="submit" id="crawl-button">Индексировать</button></form>
+<div id="crawl-status" role="status"></div>
+<p class="note">Важно: это ранняя локальная версия, а не поиск по всему интернету. Уважай правила сайтов и их robots.txt.</p>
+</section>
+</main>
+<footer>POLARA <span>•</span> экспериментальная поисковая система</footer>
+<script src="app.js"></script>
+</body>
+</html>
