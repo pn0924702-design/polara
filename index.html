@@ -3,36 +3,44 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>POLARA — поиск</title>
-<link rel="stylesheet" href="style.css">
+<meta name="theme-color" content="#3479c8">
+<meta name="description" content="POLARA — поиск, который всегда рядом. Исследуй интернет вместе с поиском для Узбекистана.">
+<title>POLARA — поиск, который всегда рядом</title>
+<link rel="stylesheet" href="/style.css">
 </head>
 <body>
-<header class="top"><a class="brand" href="/"><span class="logo">✦</span> POLARA</a><span class="tag">ЛОКАЛЬНЫЙ ПРОТОТИП</span></header>
-<main>
+<div class="backdrop" aria-hidden="true"></div><div class="shade" aria-hidden="true"></div>
+<header class="top">
+  <a class="brand" href="/" aria-label="POLARA — главная"><span class="logo">✦</span><span>POLARA</span></a>
+  <nav class="nav" aria-label="Главное меню"><a href="#home" data-i18n="home">Главная</a><a href="#features" data-i18n="featuresNav">Возможности</a><a href="#about" data-i18n="about">О нас</a><a href="#footer" data-i18n="contacts">Контакты</a></nav>
+  <div class="tools"><div class="lang-switch"><button type="button" class="lang active" data-lang="uz">UZ</button><button type="button" class="lang" data-lang="ru">RU</button></div><button type="button" id="theme-toggle" class="theme-toggle" aria-label="Переключить тему">☼ <span>🌙</span></button></div>
+</header>
+<main id="home">
 <section class="hero">
-<div class="orb">✦</div>
-<p class="eyebrow">ПОИСК НАЧИНАЕТСЯ ЗДЕСЬ</p>
-<h1>Найди своё <span>направление.</span></h1>
-<p class="intro">Добавь сайт в индекс POLARA, а затем ищи по его содержимому.</p>
-<form id="search-form" class="searchbox">
-<span class="search-icon">⌕</span><input id="query" type="search" placeholder="Что будем искать?" autocomplete="off" aria-label="Поисковый запрос">
-<button type="submit">Искать <span>→</span></button>
-</form>
-<div class="stats"><span class="dot"></span><span id="count">Загружено страниц: проверка…</span></div>
+  <div class="hero-glass"><div class="big-logo"><span class="logo big-star">✦</span><span>POLARA</span></div><p class="tagline" data-i18n="tagline">Поиск, который всегда рядом</p></div>
+  <form id="search-form" class="search-panel">
+    <div class="search-line"><span class="search-icon">⌕</span><input id="query" type="search" placeholder="Найди всё, что тебе нужно..." autocomplete="off" aria-label="Поисковый запрос"><button type="submit" class="search-submit" aria-label="Искать">→</button></div>
+    <div class="popular"><span data-i18n="popular">Популярные запросы:</span><button type="button" class="chip" data-query="Ташкент">⌕ <span data-i18n="tashkent">Ташкент</span></button><button type="button" class="chip" data-query="Университеты">⌕ <span data-i18n="universities">Университеты</span></button><button type="button" class="chip" data-query="Работа">⌕ <span data-i18n="work">Работа</span></button><button type="button" class="chip" data-query="Погода">⌕ <span data-i18n="weather">Погода</span></button></div>
+  </form>
+  <div class="stats"><span class="dot"></span><span id="count">Загружено страниц: проверка…</span></div>
 </section>
-<section class="results-section">
-<div class="results-head"><h2 id="results-title">Результаты поиска</h2><span id="result-count"></span></div>
-<div id="results" class="results"><div class="empty">Начни с добавления сайта в индекс ниже.</div></div>
+<section id="features" class="features">
+ <article class="feature"><span class="feature-icon">ϟ</span><h2 data-i18n="fast">Быстрые<br>результаты</h2></article>
+ <article class="feature"><span class="feature-icon">⬟</span><h2 data-i18n="reliable">Надёжные<br>источники</h2></article>
+ <article class="feature"><span class="feature-icon">文</span><h2 data-i18n="bilingual">На двух языках</h2></article>
+ <article class="feature"><span class="feature-icon">♥</span><h2 data-i18n="uzbekistan">Создан для<br>Узбекистана</h2></article>
 </section>
-<section class="crawler">
-<div class="crawler-heading"><div><p class="eyebrow">РАЗВИТИЕ POLARA</p><h2>Добавить сайт в индекс</h2></div><div class="crawler-icon">↗</div></div>
-<p class="crawler-copy">Прототип посетит до 20 страниц одного сайта и сохранит текст для поиска на этом компьютере.</p>
-<form id="crawl-form" class="crawl-form"><input id="site-url" type="url" placeholder="https://example.com/" required><button type="submit" id="crawl-button">Индексировать</button></form>
-<div id="crawl-status" role="status"></div>
-<p class="note">Важно: это ранняя локальная версия, а не поиск по всему интернету. Уважай правила сайтов и их robots.txt.</p>
+<section class="results-section glass" aria-live="polite">
+ <div class="results-head"><h2 id="results-title">Результаты поиска</h2><span id="result-count"></span></div>
+ <div id="results" class="results"><div class="empty">Введи запрос, чтобы искать по доступному индексу POLARA.</div></div>
+</section>
+<section id="about" class="crawler glass">
+ <div class="crawler-heading"><div><p class="eyebrow">POLARA LAB</p><h2>Добавить сайт в индекс</h2></div><div class="crawler-icon">↗</div></div>
+ <p class="crawler-copy">Этот инструмент предназначен для администратора. Добавленные страницы сохраняются в индексе поисковика.</p>
+ <form id="crawl-form" class="crawl-form"><input id="site-url" type="url" placeholder="https://example.com/" required><button type="submit" id="crawl-button">Индексировать</button></form>
+ <div id="crawl-status" role="status"></div><p class="note">Результаты зависят от страниц, которые уже добавлены в индекс. POLARA пока не индексирует весь интернет автоматически.</p>
 </section>
 </main>
-<footer>POLARA <span>•</span> экспериментальная поисковая система</footer>
-<script src="app.js"></script>
-</body>
-</html>
+<footer id="footer"><span class="footer-star">✦</span> POLARA — больше, чем просто поиск</footer>
+<script src="/app.js"></script>
+</body></html>
