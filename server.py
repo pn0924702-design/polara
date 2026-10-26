@@ -141,25 +141,59 @@ def crawl(start_url):
     save_index(combined)
     return {"added": len(found), "total": len(combined), "domain": domain}
 
+
 def search_index(query):
-    words = [w.lower() for w in re.findall(r"\w+", query, flags=re.UNICODE) if len(w) > 1]
-    items = load_index()
+    words = [
+        w.lower()
+        for w in re.findall(r"\w+", query, flags=re.UNICODE)
+        if len(w) > 1
+    ]
+
     if not words:
         return []
+
+    items = load_index()
     scored = []
+
     for item in items:
-        title = str(item.get("title", "")).lower()
-        text = str(item.get("text", "")).lower()
-        url = str(item.get("url", ""))
-        score = sum(title.count(w) * 5 + text.count(w) + url.lower().count(w) * 2 for w in words)
+        if not isinstance(item, dict):
+            continue
+
+        title = str(item.get("title") or item.get("заголовок") or "").lower()
+        text = str(item.get("text") or item.get("текст") or "").lower()
+        url = str(item.get("url") or "")
+        searchable = title + " " + text + " " + url.lower()
+
+        score = sum(
+            title.count(w) * 5
+            + text.count(w)
+            + url.lower().count(w) * 2
+            for w in words
+        )
+
+        for word in words:
+            if re.search(
+                r"\b" + re.escape(word) + r"\b",
+                searchable,
+                flags=re.UNICODE
+            ):
+                score += 2
+
         if score:
-            scored.append((score, item))
+            scored.append((score, item, title, text, url))
+
     scored.sort(key=lambda pair: pair[0], reverse=True)
+
     results = []
-    for score, item in scored[:20]:
-        text = item.get("text", "")
-        excerpt = text[:260] + ("…" if len(text) > 260 else "")
-        results.append({"title": item.get("title", item.get("url", "")), "url": item.get("url", ""), "snippet": excerpt, "score": score})
+
+    for score, item, title, text, url in scored[:20]:
+        results.append({
+            "title": title or url,
+            "url": url,
+            "snippet": text[:260] + ("…" if len(text) > 260 else ""),
+            "score": score
+        })
+
     return results
 
 class Handler(SimpleHTTPRequestHandler):
