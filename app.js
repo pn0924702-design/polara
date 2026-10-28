@@ -21,12 +21,7 @@ $("search-form").addEventListener("submit",async e=>{
  catch{results.innerHTML='<div class="empty">Не удалось связаться с сервером POLARA. Попробуй ещё раз позже.</div>';}
 });
 document.querySelectorAll("[data-query]").forEach(btn=>btn.addEventListener("click",()=>{$("query").value=btn.dataset.query;$("search-form").requestSubmit();}));
-$("crawl-form").addEventListener("submit",async e=>{
- e.preventDefault();const button=$("crawl-button"),status=$("crawl-status");button.disabled=true;button.textContent="Идёт работа…";status.textContent="Подключаемся к сайту. Это может занять несколько минут.";
- try{const response=await fetch("/api/crawl",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({url:$("site-url").value.trim()})});const data=await response.json();if(!response.ok||data.error)throw new Error(data.error||"Не удалось добавить сайт");status.textContent=`Готово! Добавлено страниц: ${data.added}. Всего в индексе: ${data.total}.`;await refreshCount();}
- catch(err){status.textContent="Ошибка: "+err.message;}
- finally{button.disabled=false;button.textContent="Индексировать";}
-});
+
 function setLanguage(lang){
  const dict=translations[lang]||translations.ru;document.documentElement.lang=lang;
  document.querySelectorAll("[data-i18n]").forEach(el=>{const key=el.dataset.i18n;if(dict[key])el.innerHTML=dict[key];});
