@@ -1,5 +1,5 @@
 from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
-from urllib.parse import urlparse, parse_qs, urljoin
+from urllib.parse import urlparse, parse_qs, urljoin, urlencode
 from urllib.request import Request, urlopen
 from urllib.error import URLError, HTTPError
 from html.parser import HTMLParser
@@ -142,31 +142,85 @@ def crawl(start_url):
     return {"added": len(found), "total": len(combined), "domain": domain}
 
 
+
 def search_index(query):
+    query = query.strip()
+    if not query:
+        return []
+
+    # 1. Ищем во внешнем поисковике SearXNG
+    search_url = os.environ.get(
+        "POLARA_SEARCH_URL", ""
+    ).strip().rstrip("/")
+
+    if search_url:
+        try:
+            params = urlencode({
+                "q": query,
+                "format": "json",
+            })
+            request = Request(
+                f"{search_url}/search?{params}",
+                headers={
+                    "User-Agent": USER_AGENT,
+                    "Accept": "application/json",
+                },
+            )
+
+            with urlopen(request, timeout=8) as response:
+                data = json.loads(
+                    response.read(2_000_000).decode("utf-8")
+                )
+
+            results = []
+            for item in data.get("results", [])[:20]:
+                url = item.get("url", "")
+                if not url.startswith(("https://", "http://")):
+                    continue
+
+                results.append({
+                    "title": item.get("title") or url,
+                    "url": url,
+                    "snippet": re.sub(
+                        r"\s+",
+                        " ",
+                        item.get("content") or ""
+                    )[:260],
+                    "score": 0,
+                })
+
+            if results:
+                return results
+
+        except Exception as exc:
+            print(f"SearXNG search error: {exc}")
+
+    # 2. Если внешний поиск недоступен,
+    # используем собственный индекс POLARA
     words = [
         w.lower()
         for w in re.findall(r"\w+", query, flags=re.UNICODE)
         if len(w) > 1
     ]
 
-    if not words:
-        return []
-
-    items = load_index()
     scored = []
 
-    for item in items:
+    for item in load_index():
         if not isinstance(item, dict):
             continue
 
-        title = str(item.get("title") or item.get("заголовок") or "").lower()
-        text = str(item.get("text") or item.get("текст") or "").lower()
+        title = str(
+            item.get("title") or item.get("заголовок") or ""
+        ).lower()
+        content = str(
+            item.get("text") or item.get("текст") or ""
+        ).lower()
         url = str(item.get("url") or "")
-        searchable = title + " " + text + " " + url.lower()
+        searchable = title + " " + content + " " + url.lower()
 
         score = sum(
             title.count(w) * 5
-            + text.count(w)
+            + content.count(w)
             + url.lower().count(w) * 2
             for w in words
         )
@@ -175,26 +229,26 @@ def search_index(query):
             if re.search(
                 r"\b" + re.escape(word) + r"\b",
                 searchable,
-                flags=re.UNICODE
+                flags=re.UNICODE,
             ):
                 score += 2
 
         if score:
-            scored.append((score, item, title, text, url))
+            scored.append((score, title, content, url))
 
-    scored.sort(key=lambda pair: pair[0], reverse=True)
+    scored.sort(key=lambda item: item[0], reverse=True)
 
-    results = []
-
-    for score, item, title, text, url in scored[:20]:
-        results.append({
+    return [
+        {
             "title": title or url,
             "url": url,
-            "snippet": text[:260] + ("…" if len(text) > 260 else ""),
-            "score": score
-        })
-
-    return results
+            "snippet": content[:260] + (
+                "…" if len(content) > 260 else ""
+            ),
+            "score": score,
+        }
+        for score, title, content, url in scored[:20]
+    ]
 
 class Handler(SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
