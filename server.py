@@ -5,7 +5,10 @@ from urllib.error import URLError, HTTPError
 from html.parser import HTMLParser
 from urllib.robotparser import RobotFileParser
 import json, os, re, socket, ipaddress, time
-
+SEARCH_URL = os.environ.get(
+    "POLARA_SEARCH_URL",
+    "https://searx.tiekoetter.com"
+).rstrip("/")
 ROOT = os.path.dirname(os.path.abspath(__file__))
 INDEX_FILE = os.path.join(ROOT, "index.json")
 HOST = "0.0.0.0"
@@ -251,27 +254,25 @@ def search_index(query):
     ]
 
 class Handler(SimpleHTTPRequestHandler):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, directory=ROOT, **kwargs)
-    def send_json(self, obj, status=200):
-        data = json.dumps(obj, ensure_ascii=False).encode("utf-8")
-        self.send_response(status)
-        self.send_header("Content-Type", "application/json; charset=utf-8")
-        self.send_header("Content-Length", str(len(data)))
-        self.send_header("Cache-Control", "no-store")
-        self.end_headers()
-        self.wfile.write(data)
+  
     def do_GET(self):
         parsed = urlparse(self.path)
+
         if parsed.path == "/api/search":
             query = parse_qs(parsed.query).get("q", [""])[0]
-            self.send_json({"results": search_index(query), "total_indexed": len(load_index())})
+            self.send_json({
+                "results": search_index(query),
+                "total_indexed": len(load_index())
+            })
             return
+
         if parsed.path == "/api/status":
             self.send_json({"total_indexed": len(load_index())})
             return
+
         if parsed.path == "/":
             self.path = "/index.html"
+
         return super().do_GET()
     def do_POST(self):
         if urlparse(self.path).path != "/api/crawl":
